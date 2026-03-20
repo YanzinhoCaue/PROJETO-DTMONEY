@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { Model, createServer } from 'miragejs';
+import { Model, Response, createServer } from 'miragejs';
 import { App } from './App';
 
 createServer({
@@ -37,6 +37,33 @@ createServer({
     this.post('/transactions', (schema, request) => {
       const data = JSON.parse(request.requestBody);
       return schema.create('transaction', data);
+    })
+
+    this.put('/transactions/:id', (schema, request) => {
+      const id = request.params.id;
+      const data = JSON.parse(request.requestBody);
+      const transaction = schema.find('transaction', id);
+
+      if (!transaction) {
+        return new Response(404, {}, { error: 'Transaction not found' });
+      }
+
+      transaction.update(data);
+
+      return transaction;
+    })
+
+    this.delete('/transactions/:id', (schema, request) => {
+      const id = request.params.id;
+      const transaction = schema.find('transaction', id);
+
+      if (!transaction) {
+        return new Response(404, {}, { error: 'Transaction not found' });
+      }
+
+      transaction.destroy();
+
+      return new Response(204, {}, {});
     })
   }
 });

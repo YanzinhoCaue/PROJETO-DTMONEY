@@ -1,8 +1,23 @@
+import { useState } from "react";
 import { Container } from "./styles";
-import { useTransactions } from "../../hooks/useTransactions";
+import { Transaction, useTransactions } from "../../hooks/useTransactions";
+import { EditTransactionModal } from "../EditTransactionModal";
 
 export function TransactionsTable() {
-  const { transactions } = useTransactions();
+  const { transactions, deleteTransaction } = useTransactions();
+  const [isEditTransactionModalOpen, setIsEditTransactionModalOpen] = useState(false);
+  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
+
+  function handleOpenEditTransactionModal(transaction: Transaction) {
+    setSelectedTransaction(transaction);
+    setIsEditTransactionModalOpen(true);
+  }
+
+  function handleCloseEditTransactionModal() {
+    setIsEditTransactionModalOpen(false);
+    setSelectedTransaction(null);
+  }
+
   return (
     <Container>
       <table>
@@ -12,6 +27,7 @@ export function TransactionsTable() {
             <th>Valor</th>
             <th>Categoria</th>
             <th>Data</th>
+            <th>Acoes</th>
           </tr>
         </thead>
         <tbody>
@@ -30,10 +46,34 @@ export function TransactionsTable() {
                     new Date(transaction.createdAt)
                   )}
                 </td>
+                <td>
+                  <div className="action-buttons">
+                    <button
+                      type="button"
+                      className="edit-button"
+                      onClick={() => handleOpenEditTransactionModal(transaction)}
+                    >
+                      Editar
+                    </button>
+                    <button
+                      type="button"
+                      className="delete-button"
+                      onClick={() => deleteTransaction(transaction.id)}
+                    >
+                      Excluir
+                    </button>
+                  </div>
+                </td>
               </tr>
           ))}
         </tbody>
       </table>
+
+      <EditTransactionModal
+        isOpen={isEditTransactionModalOpen}
+        onRequestClose={handleCloseEditTransactionModal}
+        transactionToEdit={selectedTransaction}
+      />
     </Container>
   );
 }

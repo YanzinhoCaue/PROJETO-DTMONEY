@@ -6,17 +6,27 @@ export const Container = styled.form`
     color: var(--text-title);
     font-size: 1.5rem;
     margin-bottom: 2rem;
+    text-transform: uppercase;
   }
 
   input {
     width: 100%;
     padding: 0 1.5rem;
     height: 4rem;
-    border-radius: 0.25rem;
-    border: 1px solid #d7d7d7;
+    border-radius: 0.4rem;
+    border: 1px solid rgba(19, 197, 255, 0.25);
     background: var(--input-background);
     font-weight: 400;
     font-size: 1rem;
+    color: var(--text-title);
+    transition: border-color 0.2s, box-shadow 0.2s;
+
+    &:focus {
+      outline: none;
+      border-color: var(--blue-light);
+      box-shadow: 0 0 0 3px rgba(19, 197, 255, 0.15);
+    }
+
     &::placeholder {
       color: var(--text-body);
     }
@@ -29,18 +39,22 @@ export const Container = styled.form`
     width: 100%;
     padding: 0 1.5rem;
     height: 4rem;
-    background: var(--green);
-    color: var(--shape);
-    border-radius: 0.25rem;
-    border: none;
+    background: linear-gradient(90deg, #13c5ff 0%, #00e7a0 100%);
+    color: #ffffff;
+    border-radius: 0.4rem;
+    border: 1px solid rgba(255, 255, 255, 0.15);
     font-size: 1rem;
     margin-top: 1.5rem;
     font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 
-    transition: filter 0.2s;
+    transition: filter 0.2s, transform 0.2s, box-shadow 0.2s;
 
     &:hover {
-      filter: brightness(0.9);
+      filter: brightness(1.05);
+      transform: translateY(-1px);
+      box-shadow: 0 0 20px rgba(19, 197, 255, 0.4);
     }
   }
 `;
@@ -64,19 +78,20 @@ const colors = {
 
 export const RadioBox = styled.button<RadioBoxProps>`
   height: 4rem;
-  border: 1px solid #D7D7D7;
-  border-radius: 0.25rem;
+  border: 1px solid rgba(19, 197, 255, 0.2);
+  border-radius: 0.4rem;
   background: ${(props) => props.isActive 
-    ?  transparentize(0.9, colors[props.activeColor])
-    : 'transparent'};
+    ?  transparentize(0.85, colors[props.activeColor])
+    : 'rgba(255, 255, 255, 0.01)'};
   display: flex;
   align-items: center;
   justify-content: center;
 
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s;
 
   &:hover {
-    border-color: ${darken(0.1, "#D7D7D7")};
+    border-color: ${darken(0.02, "#13c5ff")};
+    box-shadow: 0 0 14px rgba(19, 197, 255, 0.2);
   }
 
   img {
@@ -88,6 +103,8 @@ export const RadioBox = styled.button<RadioBoxProps>`
     display: inline-block;
     margin-left: 1rem;
     font-size: 1rem;
-    color: var(--text-title);
+    color: var(--text-body);
+    font-weight: 600;
+    letter-spacing: 0.02em;
   }
 `;

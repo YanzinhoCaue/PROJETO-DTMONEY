@@ -1,7 +1,7 @@
 import { createContext, useEffect, useState, ReactNode, useContext } from 'react';
 import { api } from '../services/api';
 
-interface Transaction {
+export interface Transaction {
   id: number,
   title: string,
   amount: number,
@@ -20,6 +20,7 @@ interface Transaction {
 // type TransactionInput = Omit<Transaction, 'id' | 'createdAt'>
 
 type TransactionInput = Pick<Transaction, 'title' | 'amount' | 'type' | 'category'>
+type UpdateTransactionInput = TransactionInput & Pick<Transaction, 'id'>;
 
 interface TransactionsProviderProps {
   children: ReactNode,
@@ -28,6 +29,8 @@ interface TransactionsProviderProps {
 interface TransactionsContextData {
   transactions: Transaction[],
   createTransaction: (transaction: TransactionInput) => Promise<void>;
+  deleteTransaction: (id: number) => Promise<void>;
+  updateTransaction: (transaction: UpdateTransactionInput) => Promise<void>;
 }
 
 const TransactionsContext = createContext<TransactionsContextData>(
@@ -47,14 +50,34 @@ export function TransactionsProvider({ children }: TransactionsProviderProps) {
       createdAt: new Date(),
     });
     const { transaction } = response.data;
-    setTransaction([
-      ...transactions, 
+    setTransaction((prevTransactions) => [
+      ...prevTransactions,
       transaction,
     ]);
   }
 
+  async function deleteTransaction(id: number) {
+    await api.delete(`/transactions/${id}`);
+
+    setTransaction((prevTransactions) =>
+      prevTransactions.filter((transaction) => transaction.id !== id)
+    );
+  }
+
+  async function updateTransaction(transactionInput: UpdateTransactionInput) {
+    const { id, ...rest } = transactionInput;
+    const response = await api.put(`/transactions/${id}`, rest);
+    const { transaction } = response.data;
+
+    setTransaction((prevTransactions) =>
+      prevTransactions.map((currentTransaction) =>
+        currentTransaction.id === id ? transaction : currentTransaction
+      )
+    );
+  }
+
   return (
-    <TransactionsContext.Provider value={{transactions, createTransaction}}>
+    <TransactionsContext.Provider value={{transactions, createTransaction, deleteTransaction, updateTransaction}}>
       {children}
     </TransactionsContext.Provider>
   )
